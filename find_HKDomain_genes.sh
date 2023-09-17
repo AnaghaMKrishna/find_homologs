@@ -21,7 +21,19 @@ tblastn \
 | awk '{if ($3 > 30.000 && $4 > 0.9*$13 ) print $0;}' > tblastn_output_temp
 
 #cut -f 1,9,10 tblastn_output_temp > tblastn_output_truncated_temp
-awk 'FNR == NR {homologs_position[$2,$3]; next} {for (pos in homologs_position) {split(pos, r, SUBSEP); if ( r[1] >= $2 && r[2] <= $3) print $0}}' <(cut -f 1,9,10 tblastn_output_temp) $bed_file
+awk 'FNR == NR {
+        homologs_position[$2,$3]; 
+        next
+    } 
+    {
+        for (pos in homologs_position) 
+        {
+            split(pos, r, SUBSEP); 
+            if ( r[1] >= $2 && r[2] <= $3) 
+                print $4
+        }
+    }
+    ' <(cut -f 1,9,10 tblastn_output_temp) $bed_file | uniq
 
 #awk 'FNR==NR {a[$2]; next} { for (i in a) if (i > $2) print $0 }' tblastn_output_truncated_temp $bed_file
 # awk 'FNR==NR {a[$2]; next} { for (i in a) if (i > $2) print $0}' tblastn_output_truncated_temp $bed_file
