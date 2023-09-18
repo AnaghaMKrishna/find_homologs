@@ -8,7 +8,8 @@ bed_file=$3
 HKDomain_genes_file=$4
 
 #Create temp files for storing intermediate outputs
-#tblastn_output_temp=$(mktemp)
+tblastn_output_temp=$(mktemp)
+
 # tblastn command matches the query protein sequence with genome sequence in 
 # subject files and outputs the standard 12 columns and query length.
 # Use awk for column-based filtering to extract rows which match more than 
@@ -18,9 +19,10 @@ tblastn \
     -subject $subject_file \
     -task tblastn \
     -outfmt '6 std qlen' \
-| awk '{if ($3 > 30.000 && $4 > 0.9*$13 ) print $0;}' > tblastn_output_temp
+| awk '{if ($3 > 30.000 && $4 > 0.9*$13 ) print $0;}' > $tblastn_output_temp
 
-#cut -f 1,9,10 tblastn_output_temp > tblastn_output_truncated_temp
+# Loop over start and end positions of homologs and compare if it lies with 
+# the boundary of any genes in BED file and filter for unique gene names
 awk 'FNR == NR {
         homologs_position[$2,$3]; 
         next
@@ -33,14 +35,12 @@ awk 'FNR == NR {
                 print $4
         }
     }
-    ' <(cut -f 1,9,10 tblastn_output_temp) $bed_file | uniq
+    ' <(cut -f 1,9,10 $tblastn_output_temp) $bed_file | uniq > $HKDomain_genes_file
 
-#awk 'FNR==NR {a[$2]; next} { for (i in a) if (i > $2) print $0 }' tblastn_output_truncated_temp $bed_file
-# awk 'FNR==NR {a[$2]; next} { for (i in a) if (i > $2) print $0}' tblastn_output_truncated_temp $bed_file
-# awk 'FNR == NR {a[$2]; next} { for (i in a) print i}' tblastn_output_truncated_temp
-# awk 'FNR == NR {a[$2]; b[$3]; next} { for (i in a) if (i > $2) print}' IFS='\t' tblastn_output_truncated_temp $bed_file
-# awk 'FNR == NR {a[$2]; b[$3]; next} { for (i in a; j in b) if (i>$2 && j<$3) print}' tblastn_output_truncated_temp $bed_file
-# awk 'FNR == NR {a[$2]; a[$3]; next} $3 in a' file1.txt file2.txt
-#FNR==NR {a[$0];next} {for (i in a) if ($0~i) print}' file1 file2
-# Count the number of lines in output file to obtain number of matches
-#cat tblastn_output_temp 1163209
+# Clean up temp file
+rm $tblastn_output_temp
+
+# for orgs in $(ls -D ./);  do ../find_homologs/find_HKDomain_genes.sh ../HK_domain_Q2.faa $(ls $orgs/*.fna) $(ls 
+# $orgs/*.bed) $(ls $orgs/*.txt); done
+# time for orgs in $(ls -D ./);  do ../find_homologs/find_HKDomain_genes.sh ../HK_domain_Q2.faa $(ls $orgs/*.fna) $(ls 
+# $orgs/*.bed) $(ls $orgs/*.txt); done
