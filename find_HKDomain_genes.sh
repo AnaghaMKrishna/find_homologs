@@ -31,16 +31,18 @@ awk 'FNR == NR {
         for (pos in homologs_position) 
         {
             split(pos, r, SUBSEP); 
-            if ( r[1] >= $2 && r[2] <= $3) 
+            if ( r[1] > $2 && r[2] <= $3) 
                 print $4
         }
     }
-    ' <(cut -f 1,9,10 $tblastn_output_temp) $bed_file | uniq > $HKDomain_genes_file
+    ' <(cut -f 1,9,10 $tblastn_output_temp) $bed_file | sort | uniq > $HKDomain_genes_file
+
+# Get the organism name from input file name
+org=${subject_file##*/}
+echo "The number of homologous HK domain genes identified for ${org%.*} is $(wc -l $HKDomain_genes_file | cut -d' ' -f1)"
 
 # Clean up temp file
 rm $tblastn_output_temp
 
-# for orgs in $(ls -D ./);  do ../find_homologs/find_HKDomain_genes.sh ../HK_domain_Q2.faa $(ls $orgs/*.fna) $(ls 
-# $orgs/*.bed) $(ls $orgs/*.txt); done
-# time for orgs in $(ls -D ./);  do ../find_homologs/find_HKDomain_genes.sh ../HK_domain_Q2.faa $(ls $orgs/*.fna) $(ls 
-# $orgs/*.bed) $(ls $orgs/*.txt); done
+# for orgs in $(ls -D ./);  do ../find_homologs/find_HKDomain_genes.sh ../HK_domain_Q2.faa 
+# $(ls $orgs/*.fna) $(ls $orgs/*.bed) $(ls $orgs/*.bed | cut -d. -f1).txt; done
