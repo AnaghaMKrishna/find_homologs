@@ -17,7 +17,7 @@ tblastn_output_temp=$(mktemp)
 tblastn \
     -query $HKDomain_query_file \
     -subject $subject_file \
-    -task tblastn \
+    -task tblastn-fast \
     -outfmt '6 std qlen' \
 | awk '{if ($3 > 30.000 && $4 > 0.9*$13 ) print $0;}' > $tblastn_output_temp
 
@@ -39,7 +39,7 @@ awk 'FNR == NR {
 
 # Get the organism name from input file name
 org=${subject_file##*/}
-echo "The number of homologous HK domain genes identified for ${org%.*} is $(wc -l $HKDomain_genes_file | cut -d' ' -f1)"
+echo "The number of homologous HK domain genes identified for ${org%.*} is $(wc -l $HKDomain_genes_file | cut -d' ' -f1) and written to file $(wc -l $HKDomain_genes_file | cut -d' ' -f2)"
 
 # Clean up temp file
 rm $tblastn_output_temp
