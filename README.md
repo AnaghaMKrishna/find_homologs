@@ -1,2 +1,1 @@
-# perfect_hits
-My first GitHub repo! Created for BIOL7200 assignment3.
+Identifies sequence of histidine kinase (HK) domains in the Escherichia coli strain K-12, Pseudomonas aeruginosa UCBPP-PA14, Vibrio cholerae N16961 and Wolbachia
