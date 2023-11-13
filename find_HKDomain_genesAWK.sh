@@ -32,8 +32,8 @@ awk 'FNR == NR {
     {
         for (pos in homologs_position) 
         {
-            split(pos, r, SUBSEP); 
-            if ( r[1] > $2 && r[2] <= $3) 
+            split(pos, pos_arr, SUBSEP); 
+            if ( pos_arr[1] > $2 && pos_arr[2] <= $3)
                 print $4
         }
     }
